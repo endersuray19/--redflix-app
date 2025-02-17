@@ -1,4 +1,5 @@
-import Input from "@/component/input";
+
+import Input from "@/component/Input";
 import { useCallback, useState } from "react";
 
 const Auth = ()=>{
