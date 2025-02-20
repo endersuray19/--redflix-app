@@ -2,45 +2,49 @@ import axios from 'axios';
 import Input from "@/pages/component/Input";
 import { useCallback, useState } from "react";
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/router';
-
+//import icon 
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
-
+//page auth
 const Auth = ()=>{
-    const router = useRouter();
+    //email digunakan  misal untuk input oleh pengguna, setemail digunakan untuk mengatur value email
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
-
     const[variant, setVariant] = useState("login");
+    //mengatur toggle login
     const toggleVariant = useCallback(()=>{
         setVariant((currentVariant)=>currentVariant ==='login'?'register':'login')
     },[]);
+    //fungsi login
      const login = useCallback(async()=>{
         try{
+            //menggunakan signin dengna value email dan password
             await signIn('credentials',{
-                email, password,redirect:false,callbackUrl:'/'
-            })
-            router.push('/');
+                email, password,callbackUrl:'/profiles'
+            });
         }
         catch(error){
             console.log(error);
-        }
-    },[email,password])
+        }//Jika email dan password tidak berubah, fungsi login yang sama akan digunakan di setiap render, menghemat performa.
+
+    },[email,password]);
+    //fungsi register
     const register = useCallback(async()=>{
         try{
+            //mengirim value ke register.ts untuk mendaftarkan akun
             await axios.post("/api/register",{
                 email,
                 name,
                 password
             });
+            //login ketika berhasil register
             login();
         }catch(error){
             console.log(error);
         }
-    },[email, name, password,login]);
-   
+    },[email, name,password,login]);
+  
     return(
         <div className="relative h-full w-full bg-[url('/images/hero.jpg')] bg-cover bg-no-repeat bg-fixed bg-center]">
             <div className="bg-black w-full h-full lg:bg-opacity-50">
@@ -62,10 +66,10 @@ const Auth = ()=>{
                         </div>
                         <button onClick={variant === 'login' ?login :register} className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">{variant === 'login' ? 'Login': 'Sign up'}</button>
                         <div className="flex flex-row items-center gap-4 mt-8 justify-center">
-                            <div onClick={()=>signIn('google',{callbackUrl:'/'})} className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition" >
+                            <div onClick={()=>signIn('google',{callbackUrl:'/profiles'})} className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition" >
                                 <FcGoogle size={30}/>
                             </div>
-                             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition" onClick={()=>signIn('github',{callbackUrl:'/'})}>
+                             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition" onClick={()=>signIn('github',{callbackUrl:'/profiles'})}>
                                 <FaGithub size={30}/>
                             </div>
                         </div>
@@ -76,6 +80,7 @@ const Auth = ()=>{
                             {variant === 'login' ?'Create an account':'login'}
                         </span>
                         </p>
+                       
                     </div>
                 </div>
             </div>
